@@ -1,0 +1,16 @@
+# Priors on parameters that enter the predictions linearly,
+# for analytic marginalization.
+#
+
+alpha0:
+  avg: 0.
+  std: 150.
+alpha2:
+  avg: 0.
+  std: 150.
+SN0:
+  avg: 2000.
+  std: 4000.
+SN2:
+  avg:  0.
+  std: 5e4
