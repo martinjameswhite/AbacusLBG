@@ -2,7 +2,7 @@
 #
 theory:
   rsd_likelihood.Taylor_pk_theory:
-      basedir:       /pscratch/sd/m/mwhite/Abacus/Cobaya/
+      basedir:       /pscratch/sd/m/mwhite/AbacusLBG/Cobaya/
       zfid:          3.00
       pk_filename:   emulator/emu_z3.00_pkells.json
       s8_filename:   emulator/emu_s8.json
@@ -10,7 +10,7 @@ theory:
       
 likelihood:
   rsd_likelihood.FullShapeLikelihood:
-    basedir:       /pscratch/sd/m/mwhite/Abacus/Cobaya/
+    basedir:       /pscratch/sd/m/mwhite/AbacusLBG/Cobaya/
     zfid:          3.00
     Hz_fid:        457.8963574948886 
     chiz_fid:      4377.564498513983
