@@ -23,8 +23,8 @@ def compute_fid_dists(z, OmegaM):
         "N_ncdm": 1.0,
         "N_ur": 2.0328,
         'tau_reio': 0.0544,
-        'omega_b': h**2 * fb * Omega_M,
-        'omega_cdm': h**2 * (1-fb) * Omega_M}
+        'omega_b': h**2 * fb * OmegaM,
+        'omega_cdm': h**2 * (1-fb) * OmegaM}
 
     pkclass = Class()
     pkclass.set(pkparams)
