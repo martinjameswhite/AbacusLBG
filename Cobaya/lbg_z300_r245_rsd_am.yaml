@@ -73,7 +73,7 @@ params:
       max:  5.0
     ref:
       dist:  norm
-      loc:   3.804
+      loc:   3.250
       scale: 0.001
     latex: (1+b_1)\sigma_8
   b2:
