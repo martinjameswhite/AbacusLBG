@@ -46,7 +46,8 @@ class FullShapeLikelihood(Likelihood):
                'logA': None,\
                'bsig8': None,\
                'b2': None,\
-               'bs': None}
+               'bs': None,\
+               'b3': None}
         return(req)
         #
     def logp(self,**params_values):
@@ -147,18 +148,19 @@ class FullShapeLikelihood(Likelihood):
         b1   = pp.get_param('bsig8')/sig8 - 1.
         b2   = pp.get_param('b2')
         bs   = pp.get_param('bs')
+        b3   = pp.get_param('b3')
         # the "linear" parameters.
         alp0 = thetas['alpha0']
         alp2 = thetas['alpha2']
         sn0  = thetas['SN0']
         sn2  = thetas['SN2']
         #
-        bias  = [b1, b2, bs, 0.]
+        bias  = [b1,b2,bs,b3]
         cterm = [alp0,alp2,0,0]
-        stoch = [sn0, sn2, 0]
+        stoch = [sn0,sn2,0]
         bvec  = bias + cterm + stoch
         #
-        p0, p2, p4 = self.combine_bias_terms_pkell(bvec, p0ktable, p2ktable, p4ktable)
+        p0, p2, p4 = self.combine_bias_terms_pkell(bvec,p0ktable,p2ktable,p4ktable)
         #
         # Put a point at k=0 to anchor the low-k part of the Spline.
         kv,p0 = np.append([0.0,],kv),np.append([0.0,],p0)
