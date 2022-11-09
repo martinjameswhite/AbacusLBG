@@ -96,6 +96,9 @@ params:
       loc:   -2.
       scale:  1.
     latex: b_s
+  b3:
+    value: 0.0
+    latex: b_3
 
 
 sampler:
