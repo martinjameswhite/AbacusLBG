@@ -18,8 +18,8 @@ likelihood:
     fs_covfn:      data/lbg_r240.cov
     fs_winfn:      data/lbg_r240.win
     fs_kmin:       0.075
-    fs_mmax:       0.40
-    fs_qmax:       0.40
+    fs_mmax:       0.35
+    fs_qmax:       0.35
     stop_at_error: True
 
     # Abacus cosmology is:
