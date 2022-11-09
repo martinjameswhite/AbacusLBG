@@ -19,8 +19,8 @@ likelihood:
     fs_winfn:      data/lbg_r240.win
     lp_fname:      lbg_z300_r240_rsd_linpar.yaml
     fs_kmin:       0.075
-    fs_mmax:       0.40
-    fs_qmax:       0.40
+    fs_mmax:       0.35
+    fs_qmax:       0.35
     stop_at_error: True
 
     # Abacus cosmology is:
