@@ -65,7 +65,7 @@ if __name__=="__main__":
         dat        = {}
         dat['RA' ] = lbgs.xpos*ichi + Lx
         dat['DEC'] = lbgs.ypos*ichi
-        dat['CHI'] = lbgs.zpos
+        dat['CHI'] = lbgs.zpos + chi0
         # downsample
         rand = rng.uniform(low=0,high=1,size=dat['RA'].size)
         ww   = np.nonzero( rand<fsamp )[0]
