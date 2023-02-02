@@ -17,7 +17,7 @@ if __name__=="__main__":
     rng    = np.random.default_rng(1)
     # Define the mock catalog, shell and HOD.
     # 0  12.15  13.55   0.30   1.00   0.75   0.03   6.79e-04
-    lbgs   = MockLBG('hod_big.yaml',3.0)
+    lbgs   = MockLBG('hod_big.yaml',None,4383.)
     params = {'logM_cut':12.15,'logM1':13.55,\
               'sigma':0.30,'kappa':1.00,'alpha':0.75}
     lbgs.set_hod(params)
