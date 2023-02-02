@@ -42,7 +42,7 @@ if __name__=="__main__":
         nbar.append(nobj / (Lx*Ly))
     fsamp = ntarget / np.median(nbar)
     # Match the min/max values of chi.
-    chimin,chimax = np.min(lbgs.zpos),np.max(lbgs.zpos)
+    chimin,chimax = np.min(lbgs.zpos+chi0),np.max(lbgs.zpos+chi0)
     # Generate a uniform random catalog.
     # We offset the RA to eliminate negative RAs
     # just to avoid a warning.

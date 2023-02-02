@@ -39,14 +39,15 @@ def calc_xi(dat,ran,bins=None):
     if bins is None:
         Nbin = 5
         bins = np.logspace(-0.5,1.5,Nbin+1)
+    nmu_bins = 8
     # do the pair counting, then convert to xi(s,mu).
     # Cosmology=2 is Planck, but this isn't used.
     # specifying is_comoving_dist says "CZ" is really a comoving distance.
-    DD = Pairs(1,2,nthreads,1.0,8,bins,RA1=dra,DEC1=ddc,CZ1=dcz,\
+    DD = Pairs(1,2,nthreads,1.0,nmu_bins,bins,RA1=dra,DEC1=ddc,CZ1=dcz,\
                weights1=dwt,weight_type=pp,is_comoving_dist=True)
-    RR = Pairs(1,2,nthreads,1.0,8,bins,RA1=rra,DEC1=rdc,CZ1=rcz,\
+    RR = Pairs(1,2,nthreads,1.0,nmu_bins,bins,RA1=rra,DEC1=rdc,CZ1=rcz,\
                weights1=rwt,weight_type=pp,is_comoving_dist=True)
-    DR = Pairs(0,2,nthreads,1.0,0.8,bins,RA1=dra,DEC1=ddc,CZ1=dcz,\
+    DR = Pairs(0,2,nthreads,1.0,nmu_bins,bins,RA1=dra,DEC1=ddc,CZ1=dcz,\
                RA2=rra,DEC2=rdc,CZ2=rcz,\
                weights1=dwt,weights2=rwt,weight_type=pp,is_comoving_dist=True)
     xi = convert_3d_counts_to_cf(Nd,Nd,Nr,Nr,DD,DR,DR,RR)
