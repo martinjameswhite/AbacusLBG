@@ -71,9 +71,9 @@ if __name__=="__main__":
         dat['RA' ] = dat['RA' ][rad2<diam**2/4]
         dat['DEC'] = dat['DEC'][rad2<diam**2/4]
         # compute the clustering.
-        bins,wt = calc_xi(dat,ran)
+        bins,xi = calc_xi(dat,ran)
         rval    = np.sqrt( bins[:-1]*bins[1:] )
-        xis.append(wt)
+        xis.append(xi)
         ngals.append(dat['RA'].size)
     xis  = np.array(xis)
     xavg = np.mean(xis,axis=0)
