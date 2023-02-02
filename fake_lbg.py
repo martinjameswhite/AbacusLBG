@@ -162,7 +162,7 @@ class MockLBG:
 
 if __name__=="__main__":
     diam   = 3.2 * np.pi/180.
-    lbgs   = MockLBG('hod_big.yaml',4383.)
+    lbgs   = MockLBG('hod_big.yaml',None,4383.)
     params = {'logM_cut':12.15,'logM1':13.55,\
               'sigma':0.30,'kappa':1.00,'alpha':0.75}
     lbgs.set_hod(params)
