@@ -51,6 +51,9 @@ def calc_xi(dat,ran,bins=None):
                RA2=rra,DEC2=rdc,CZ2=rcz,\
                weights1=dwt,weights2=rwt,weight_type=pp,is_comoving_dist=True)
     xi = convert_3d_counts_to_cf(Nd,Nd,Nr,Nr,DD,DR,DR,RR)
-    # Return the binning and xi(s,mu).
-    return( (bins,xi) )
+    # Compute the monopole.
+    xi.shape = (Nbin,nmu_bins)
+    xi0 = xi.sum(axis=1)/float(nmu_bins)
+    # Return the binning and xi_0(s).
+    return( (bins,xi0) )
     #
