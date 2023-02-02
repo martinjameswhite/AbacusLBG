@@ -41,17 +41,21 @@ if __name__=="__main__":
         nobj   = lbgs.d['nkeep']
         nbar.append(nobj / (Lx*Ly))
     fsamp = ntarget / np.median(nbar)
+    # Match the min/max values of chi.
+    chimin,chimax = np.min(lbgs.zpos),np.max(lbgs.zpos)
     # Generate a uniform random catalog.
     # We offset the RA to eliminate negative RAs
     # just to avoid a warning.
     nran = 100000
     ran  = {}
-    ran['RA' ] = rng.uniform(low=-Lx/2.,high=Lx/2.,size=nran) + Lx
-    ran['DEC'] = rng.uniform(low=-Ly/2.,high=Ly/2.,size=nran)
+    ran['RA' ] = rng.uniform(low=-Lx/2.,high=Lx/2. ,size=nran) + Lx
+    ran['DEC'] = rng.uniform(low=-Ly/2.,high=Ly/2. ,size=nran)
+    ran['CHI'] = rng.uniform(low=chimin,high=chimax,size=nran)
     # apply mask.
     rad2 = ( (ran['RA']-Lx)**2 + (ran['DEC'])**2 )*(np.pi/180.)**2
     ran['RA' ] = ran['RA' ][rad2<diam**2/4]
     ran['DEC'] = ran['DEC'][rad2<diam**2/4]
+    ran['CHI'] = ran['CHI'][rad2<diam**2/4]
     # Now do the MC loop.
     rval,xis,ngals = None,[],[]
     for i in range(256):
@@ -61,15 +65,18 @@ if __name__=="__main__":
         dat        = {}
         dat['RA' ] = lbgs.xpos*ichi + Lx
         dat['DEC'] = lbgs.ypos*ichi
+        dat['CHI'] = lbgs.zpos
         # downsample
         rand = rng.uniform(low=0,high=1,size=dat['RA'].size)
         ww   = np.nonzero( rand<fsamp )[0]
         dat['RA' ] = dat['RA' ][ww]
         dat['DEC'] = dat['DEC'][ww]
+        dat['CHI'] = dat['CHI'][ww]
         # apply mask.
         rad2 = ( (dat['RA']-Lx)**2 + (dat['DEC'])**2 )*(np.pi/180.)**2
         dat['RA' ] = dat['RA' ][rad2<diam**2/4]
         dat['DEC'] = dat['DEC'][rad2<diam**2/4]
+        dat['CHI'] = dat['CHI'][rad2<diam**2/4]
         # compute the clustering.
         bins,xi = calc_xi(dat,ran)
         rval    = np.sqrt( bins[:-1]*bins[1:] )
