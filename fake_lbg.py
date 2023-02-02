@@ -108,6 +108,7 @@ class MockLBG:
         # function, but for now I'll use a hard zcut.
         Lbox  = self.d['Lbox']
         Lside = diam * self.d['chi0']
+        depth = 0.8 * Lbox  # Most of the box, avoiding periodicity.
         gals  = self.lbgs['LRG']
         self.d['Lside'] = Lside
         # Shift the center of the box and select objects.
@@ -117,7 +118,9 @@ class MockLBG:
         in_survey = np.nonzero( (xpos>-0.5*Lside)&\
                                 (xpos< 0.5*Lside)&\
                                 (ypos>-0.5*Lside)&\
-                                (ypos< 0.5*Lside) )[0]
+                                (ypos< 0.5*Lside)&\
+                                (zpos>-0.5*depth)&\
+                                (zpos< 0.5*depth)  )[0]
         # Store the results for later use.
         self.d['nkeep'] = len(in_survey)
         self.xpos = xpos[in_survey]
@@ -139,11 +142,13 @@ class MockLBG:
         ichi = 1.0/self.d['chi0'] * 180./np.pi
         rra  = self.xpos*ichi
         dec  = self.ypos*ichi
+        chi  = self.zpos + self.chi0
         # and save them in a dictionary.
         hdr,outdict    = self.make_hdr(),{}
         hdr['COMMENT'] = 'Distances in Mpc/h'
         outdict['RA' ] = rra.astype('float32')
         outdict['DEC'] = dec.astype('float32')
+        outdict['CHI'] = chi.astype('float32')
         outdict['BITMASK']=self.bitm
         tt = Table(outdict)
         for k in hdr.keys(): tt.meta[k] = hdr[k]
@@ -156,7 +161,6 @@ class MockLBG:
 
 
 if __name__=="__main__":
-    Nside  = 512
     diam   = 3.2 * np.pi/180.
     lbgs   = MockLBG('hod_big.yaml',4383.)
     params = {'logM_cut':12.15,'logM1':13.55,\

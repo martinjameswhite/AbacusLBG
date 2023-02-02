@@ -22,14 +22,14 @@ def calc_xi(dat,ran,bins=None):
     pp  = 'pair_product'
     dra = dat['RA' ].astype('float32')
     ddc = dat['DEC'].astype('float32')
-    dcz = dat['Z'  ].astype('float32') * 2.997925e8
+    dcz = dat['CHI'].astype('float32')
     if not 'WT' in dat.keys():
         dwt = np.ones_like(dat['RA'])
     else:
         dwt = dat['WT'].astype('float32')
     rra = ran['RA' ].astype('float32')
     rdc = ran['DEC'].astype('float32')
-    rcz = ran['Z'  ].astype('float32') * 2.997925e8
+    rcz = ran['CHI'].astype('float32')
     if not 'WT' in ran.keys():
         rwt = np.ones_like(ran['RA'])
     else:
@@ -38,16 +38,17 @@ def calc_xi(dat,ran,bins=None):
     # is passed in, do log-spaced bins.
     if bins is None:
         Nbin = 5
-        bins = np.logspace(-1.5,-0.5,Nbin+1)
+        bins = np.logspace(-0.5,1.5,Nbin+1)
     # do the pair counting, then convert to xi(s,mu).
-    # Cosmology=2 is Planck.
+    # Cosmology=2 is Planck, but this isn't used.
+    # specifying is_comoving_dist says "CZ" is really a comoving distance.
     DD = Pairs(1,2,nthreads,1.0,8,bins,RA1=dra,DEC1=ddc,CZ1=dcz,\
-               weights1=dwt,weight_type=pp)
+               weights1=dwt,weight_type=pp,is_comoving_dist=True)
     RR = Pairs(1,2,nthreads,1.0,8,bins,RA1=rra,DEC1=rdc,CZ1=rcz,\
-               weights1=rwt,weight_type=pp)
+               weights1=rwt,weight_type=pp,is_comoving_dist=True)
     DR = Pairs(0,2,nthreads,1.0,0.8,bins,RA1=dra,DEC1=ddc,CZ1=dcz,\
                RA2=rra,DEC2=rdc,CZ2=rcz,\
-               weights1=dwt,weights2=rwt,weight_type=pp)
+               weights1=dwt,weights2=rwt,weight_type=pp,is_comoving_dist=True)
     xi = convert_3d_counts_to_cf(Nd,Nd,Nr,Nr,DD,DR,DR,RR)
     # Return the binning and xi(s,mu).
     return( (bins,xi) )
