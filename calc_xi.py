@@ -39,7 +39,7 @@ def calc_xi(dat,ran,bins=None):
     if bins is None:
         Nbin = 5
         bins = np.logspace(-0.5,1.5,Nbin+1)
-    nmu_bins = 8
+    nmu_bins = 16
     # do the pair counting, then convert to xi(s,mu).
     # Cosmology=2 is Planck, but this isn't used.
     # specifying is_comoving_dist says "CZ" is really a comoving distance.
