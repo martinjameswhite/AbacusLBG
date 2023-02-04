@@ -46,7 +46,7 @@ if __name__=="__main__":
     # Generate a uniform random catalog.
     # We offset the RA to eliminate negative RAs
     # just to avoid a warning.
-    nran = 100000
+    nran = 8000000
     ran  = {}
     ran['RA' ] = rng.uniform(low=-Lx/2.,high=Lx/2. ,size=nran) + Lx
     ran['DEC'] = rng.uniform(low=-Ly/2.,high=Ly/2. ,size=nran)
