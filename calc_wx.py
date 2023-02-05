@@ -30,8 +30,8 @@ def calc_wx(spec,targ,rand,bins=None,dchi=50):
     # be the same type.  Ensure this now.
     sra = spec['RA' ].astype('float32')
     sdc = spec['DEC'].astype('float32')
-    tra = spec['RA' ].astype('float32')
-    tdc = spec['DEC'].astype('float32')
+    tra = targ['RA' ].astype('float32')
+    tdc = targ['DEC'].astype('float32')
     rra = rand['RA' ].astype('float32')
     rdc = rand['DEC'].astype('float32')
     # We'll need the distances to the spectroscopic sample.
