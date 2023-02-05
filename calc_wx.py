@@ -12,7 +12,6 @@ import os
 from astropy.table import Table
 #
 from Corrfunc.mocks import DDtheta_mocks as Pairs
-from Corrfunc.utils import convert_3d_counts_to_cf
 
 
 
@@ -38,7 +37,6 @@ def calc_wx(spec,targ,rand,bins=None,dchi=50):
     sch = spec['CHI']
     chimin,chimax = np.min(sch),np.max(sch)
     # Now do the pair counting in steps of chi.
-    wx   = np.zeros(len(bins)-1)
     st   = np.zeros(len(bins)-1)
     sr   = np.zeros(len(bins)-1) + 1e-15
     chi0 = chimin
