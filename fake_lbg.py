@@ -109,7 +109,7 @@ class MockLBG:
         # function, but for now I'll use a hard zcut.
         Lbox  = self.d['Lbox']
         Lside = diam * self.d['chi0']
-        depth = 0.8 * Lbox  # Most of the box, avoiding periodicity.
+        depth = 0.95 * Lbox  # Most of the box, avoiding periodicity.
         gals  = self.lbgs['LRG']
         self.d['Lside'] = Lside
         # Shift the center of the box and select objects.
