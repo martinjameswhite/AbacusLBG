@@ -54,8 +54,9 @@ if __name__=="__main__":
     chimin,chimax = np.min(lbgs.zpos+chi0),np.max(lbgs.zpos+chi0)
     print("Raw 3D number density ",lbgs.d['nbar'])
     sampfn  = Spline(sfn[:,1],1e-3/lbgs.d['nbar']*sfn[:,2],k=1,ext='zeros')
+    sampnrm = np.trapz(sampfn(sfn[:,1]),x=sfn[:,1])
     # Now do the MC loop.
-    rval,wxs,ngals = None,[],[]
+    rval,wxs,ngals,fchis = None,[],[],[]
     for i in range(256):
         # Generate the galaxies.
         offset = rng.uniform(low=-0.5,high=0.5,size=3)
@@ -77,24 +78,28 @@ if __name__=="__main__":
         dat['DEC'] = ndc[ww]
         dat['CHI'] = dat['CHI'][ww]
         # Make a random selection of 10% of the objects as
-        # the targets -- for now.
+        # the "spectroscopic targets" -- for now.
         rand = rng.uniform(low=0,high=1,size=dat['RA'].size)
         ww   = np.nonzero( rand<0.10 )[0]
         targ = {}
         targ['RA' ] = dat['RA' ][ww]
         targ['DEC'] = dat['DEC'][ww]
         targ['CHI'] = dat['CHI'][ww]
+        avgfchi = np.mean( sapmfn(targ['CHI'])/sampnrm )
         # compute the clustering.
         bins,wx = calc_wx(targ,dat,ran)
         rval    = np.sqrt( bins[:-1]*bins[1:] )
         wxs.append(wx)
         ngals.append(dat['RA'].size)
+        fchis.append(avgfchi)
     wxs  = np.array(wxs)
     wavg = np.mean(wxs,axis=0)
     werr = np.std( wxs,axis=0)
     wcor = np.corrcoef(wxs,rowvar=False)
     navg = np.mean(np.array(ngals,dtype='float'))
     nerr = np.std( np.array(ngals,dtype='float'))
+    favg = np.mean(np.array(fchis))
+    ferr = np.std(np.array(fchis))
     # Now write out some results.
     diam *= 180./np.pi
     area  = np.pi * (diam/2)**2
@@ -106,6 +111,7 @@ if __name__=="__main__":
         fout.write("# Number density is {:.3e}\n".format(lbgs.d['nbar']))
         fout.write("# Have {:.1f}+/-{:.2f} LBGs/field.\n".\
                    format(navg,nerr))
+        fout.write("# <fchi>={:e}+/-{:e}\n".format(favg,ferr))
         fout.write("# Correlation matrix is:\n")
         for i in range(rval.size):
             outstr = "#"
