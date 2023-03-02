@@ -40,18 +40,14 @@ class Likelihood():
         #
     def loadData(self):
         """Loads the data and covariance."""
-        if True:
-            self.xx = self.model.Rcen
-            self.dd = self.model.d['wpR']
-            self.cov= np.diag( self.dd * 0.20 )
-            return
         # First load the data.
-        dd      = np.loadtxt("mc_lbg_wp.txt")
+        dd = np.loadtxt("mc_lbg_wx.txt")
         # Generate the data vector as stacked multipoles.
         self.xx = dd[:,0]
         self.dd = dd[:,1]
         # Now load the covariance matrix.
-        self.cov= np.loadtxt("mc_lbg_cov.txt")
+        #self.cov= np.loadtxt("mc_lbg_cov.txt")
+        self.cov= np.diag( dd[:,2]**2 ) # Use diag for now.
         #
     def startpar(self):
         """Returns a starting position and scatter for the parameters."""
@@ -67,7 +63,9 @@ class Likelihood():
         #
     def observe(self,tt):
         """Converts theory to binned observation."""
-        obs  = tt[:,1]
+        ss   = Spline(tt[:,0],tt[:,1])
+        obs  = ss(self.xx)   # Ignore finite bin widths for now.
+        obs *= 1.463052e-03  # <f(chi)>
         return(obs)
         #
     def __call__(self,p):
