@@ -42,9 +42,10 @@ class HODmodel():
         self.HOD_params['LRG_params']['sigma'   ] = sigma
         self.HOD_params['LRG_params']['kappa'   ] = kappa
         self.HOD_params['LRG_params']['alpha'   ] = alpha
-        self.newBall  = AbacusHOD(self.sim_params,\
-                                  self.HOD_params,\
-                                  self.clustering_params)
+        if self.newBall is None:
+            self.newBall  = AbacusHOD(self.sim_params,\
+                                      self.HOD_params,\
+                                      self.clustering_params)
         want_rsd,write_to_disk = True,False
         self.mock_dict= self.newBall.run_hod(self.newBall.tracers,\
                                              want_rsd,write_to_disk,\
@@ -107,4 +108,7 @@ class HODmodel():
         self.Lbox = self.meta['BoxSizeHMpc']
         # Load the rp pi binning from the config file.
         self.bin_params = self.clustering_params['bin_params']
+        # Set "newBall" to be None so the code knows it needs
+        # to generate it.
+        self.newBall = None
         #
