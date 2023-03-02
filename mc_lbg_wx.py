@@ -85,7 +85,7 @@ if __name__=="__main__":
         targ['RA' ] = dat['RA' ][ww]
         targ['DEC'] = dat['DEC'][ww]
         targ['CHI'] = dat['CHI'][ww]
-        avgfchi = np.mean( sapmfn(targ['CHI'])/sampnrm )
+        avgfchi = np.mean( sampfn(targ['CHI'])/sampnrm )
         # compute the clustering.
         bins,wx = calc_wx(targ,dat,ran)
         rval    = np.sqrt( bins[:-1]*bins[1:] )
