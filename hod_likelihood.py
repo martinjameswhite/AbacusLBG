@@ -32,7 +32,7 @@ class Likelihood():
         for k in ['SimName',\
                   'BoxSizeHMpc','ParticleMassHMsun',\
                   'Omega_M','H0','Redshift']:
-            hdr += "# {:>40s} : ".format(k)+str(self.model.meta[k])+"\n"
+            hdr += "# {:>20s} : ".format(k)+str(self.model.meta[k])+"\n"
         self.header = hdr
         # Print some useful information.
         if rank==0:
