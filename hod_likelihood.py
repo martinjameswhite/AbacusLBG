@@ -29,6 +29,10 @@ class Likelihood():
         # Set the header.
         hdr  = "# HOD model using AbacusHOD.\n"
         hdr += self.model.paramNames()
+        for k in ['SimName',\
+                  'BoxSizeHMpc','ParticleMassHMsun',\
+                  'Omega_M','H0','Redshift']:
+            hdr += "# {:>40s} : ".format(k)+str(self.model.meta[k])+"\n"
         self.header = hdr
         # Print some useful information.
         if rank==0:
@@ -37,7 +41,7 @@ class Likelihood():
     def loadData(self):
         """Loads the data and covariance."""
         if True:
-            self.xx = self.model.d['Rcen']
+            self.xx = self.model.Rcen
             self.dd = self.model.d['wpR']
             self.cov= np.diag( self.dd * 0.20 )
             return
