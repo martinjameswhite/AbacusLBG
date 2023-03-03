@@ -46,6 +46,9 @@ class HODmodel():
             self.newBall  = AbacusHOD(self.sim_params,\
                                       self.HOD_params,\
                                       self.clustering_params)
+        else:
+            for k in ['logM_cut','logM1','sigma','kappa','alpha']:
+                newBall.tracers['LRG'][k] = self.HOD_params['LRG_params'][k]
         want_rsd,write_to_disk = True,False
         self.mock_dict= self.newBall.run_hod(self.newBall.tracers,\
                                              want_rsd,write_to_disk,\
