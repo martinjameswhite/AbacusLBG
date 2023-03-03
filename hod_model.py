@@ -89,6 +89,7 @@ class HODmodel():
         self.d['wpR' ] = wpR.copy()
         self.d['xi0' ] = xi0.copy()
         self.d['xi2' ] = xi2.copy()
+        self.Rcen      = Rcen.copy()
         # Pack R,wp into a theory vector and return it.
         tt      = np.zeros( (Rcen.size,2) )
         tt[:,0] = Rcen.copy()
