@@ -174,7 +174,7 @@ if __name__=="__main__":
     outfn   = "hod_fit_{:03d}.json".format(me)
     skip    = len(ext[0]) // 2
     outdict = {}
-    outdict['r'   ] = lik.model.Rcen.tolist()
+    outdict['r'   ] = lik.model.Rcen
     outdict['mcmc'] = ext[0][skip::2] + ext[1][skip::2]
     with open(outfn,"w") as fout:
         json.dump(outdict,fout,indent=2)
