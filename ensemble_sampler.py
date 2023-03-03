@@ -58,7 +58,9 @@ def stretch_move(comm,par,lnLik):
                 # Reject this step by overwriting trial values.
                 y    = par[k,:]
                 lnLy = lnLik[k]
+                ext[i].append( ext[i][-1].copy() )
             else:
+                ext[i].append( lik.model.d.copy() )
                 # Keeping the values.
                 if lnLy<-5000:
                     ostr = "******************\n" +\
@@ -133,6 +135,7 @@ def sample(fout,lik,Nstep=500):
             lnLik = rLik.copy()
         else:	# append, so walkers nproc..nwalker are filled in.
             lnLik = np.concatenate( (lnLik,rLik) )
+        ext[i].append(lik.model.d.copy())
     # Finally generate the steps in the chain.
     np.random.seed(1234+me)
     if me==0:
@@ -162,7 +165,11 @@ if __name__=="__main__":
         raise RuntimeError(outstr)
     # Set up a likelihood instance and output file name.
     lik  = Likelihood(MPI.COMM_WORLD.Get_rank())
+    ext  = {} ; ext[0] = [] ; ext[1] = []
     fout = "hod_fit.mcmc"
     # and call the sampler:
     sample(fout,lik,10000)
+    # Now do something with the samples we've stored
+    # if we want to.
+    pass
     #
