@@ -21,7 +21,7 @@ class Likelihood():
         # start point to force loading of the data.
         self.model = HODmodel("hod_big.yaml")
         hodpar,_   = self.startpar()
-        self.model(hodpar)
+        tt = self.model(hodpar)
         # Load data files, covariance, etc.
         self.loadData()
         # Invert the covariance matrix.
@@ -41,19 +41,22 @@ class Likelihood():
     def loadData(self):
         """Loads the data and covariance."""
         # First load the data.
-        dd = np.loadtxt("mc_lbg_wx.txt")
+        dd = np.loadtxt("hod_fit_dat.txt")
         # Generate the data vector as stacked multipoles.
         self.xx = dd[:,0]
         self.dd = dd[:,1]
+        if False:
+            # Useful for testing.
+            p,_     = self.startpar()
+            self.dd = self.observe(self.model(p))
         # Now load the covariance matrix.
-        #self.cov= np.loadtxt("mc_lbg_cov.txt")
-        self.cov= np.diag( dd[:,2]**2 ) # Use diag for now.
+        self.cov= np.loadtxt("hod_fit_cov.txt")
         #
     def startpar(self):
         """Returns a starting position and scatter for the parameters."""
         # Scatter is "fractional".
         pars = np.array([12.15,10.00,0.30,1.00,0.75])
-        dpar = np.array([ 0.02, 0.02,0.02,0.02,0.02])
+        dpar = np.array([ 0.01, 0.02,0.02,0.02,0.02])
         return( (pars,dpar) )
         #
     def prior_chi2(self,p):
@@ -64,8 +67,14 @@ class Likelihood():
     def observe(self,tt):
         """Converts theory to binned observation."""
         ss   = Spline(tt[:,0],tt[:,1])
-        obs  = ss(self.xx)   # Ignore finite bin widths for now.
-        obs *= 1.463052e-03  # <f(chi)>
+        rfac = np.sqrt(self.xx[1]/self.xx[0])
+        obs  = np.zeros_like(self.xx)
+        for i in range(self.xx.size):
+            rmin    = self.xx[i] / rfac
+            rmax    = self.xx[i] * rfac
+            rval    = np.linspace(rmin,rmax,32)
+            obs[i]  = np.trapz(rval*ss(rval),x=rval)
+            obs[i] /= np.trapz(rval,x=rval)
         return(obs)
         #
     def __call__(self,p):
@@ -79,10 +88,11 @@ class Likelihood():
             return(np.array([-1e8-1e3*np.sum(p**2)]))
         else:
             tt = self.model(p)
-        # Now compute chi^2.
+        # Generate the "observed" theory model.
         thy  = self.observe(tt)
+        # and compute chi^2.
         chi2 = np.dot(self.dd-thy,np.dot(self.cinv,self.dd-thy))
-        chi2+= ( (self.model.nbar-7e-4)/1e-4 )**2
+        chi2+= ( (self.model.nbar-7e-4)/1e-4 )**4
         chi2+= self.prior_chi2(p)
         return(-0.5*chi2)
     #
