@@ -23,7 +23,7 @@ def calc_wx(spec,targ,rand,bins=None,dchi=50):
     # Bin edges are specified in Mpc/h, if nothing
     # is passed in, do log-spaced bins.
     if bins is None:
-        Nbin = 5
+        Nbin = 8
         bins = np.logspace(0.0,1.5,Nbin+1)
     # RA and DEC should be in degrees, and all arrays should
     # be the same type.  Ensure this now.
