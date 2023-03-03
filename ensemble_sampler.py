@@ -168,14 +168,14 @@ if __name__=="__main__":
     ext  = {} ; ext[0] = [] ; ext[1] = []
     fout = "hod_fit.mcmc"
     # and call the sampler:
-    sample(fout,lik,10)
+    sample(fout,lik,8)
     # Now do something with the samples we've stored
     # if we want to.
     outfn   = "hod_fit_{:03d}.json".format(me)
     skip    = len(ext[0]) // 2
     outdict = {}
-    outdict['r'   ] = lik.model.Rcen.copy()
-    outdict['mcmc'] = ext[0][skip:] + ext[1][skip:]
+    outdict['r'   ] = lik.model.Rcen.tolist()
+    outdict['mcmc'] = ext[0][skip::2] + ext[1][skip::2]
     with open(outfn,"w") as fout:
         json.dump(outdict,fout,indent=2)
     #
