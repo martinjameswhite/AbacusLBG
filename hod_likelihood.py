@@ -53,7 +53,7 @@ class Likelihood():
         """Returns a starting position and scatter for the parameters."""
         # Scatter is "fractional".
         pars = np.array([12.15,10.00,0.30,1.00,0.75])
-        dpar = np.array([ 0.01, 0.01,0.01,0.01,0.01])
+        dpar = np.array([ 0.02, 0.02,0.02,0.02,0.02])
         return( (pars,dpar) )
         #
     def prior_chi2(self,p):

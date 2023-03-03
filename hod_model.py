@@ -109,7 +109,7 @@ class HODmodel():
         # Get the metaparameters for the simulation.
         self.meta = get_meta(self.sim_params['sim_name'],\
                              redshift=self.sim_params['z_mock'])
-        self.Lbox = self.meta['BoxSizeHMpc']
+        self.Lbox = float(self.meta['BoxSizeHMpc'])
         # Load the rp pi binning from the config file.
         self.bin_params = self.clustering_params['bin_params']
         # Set "newBall" to be None so the code knows it needs
