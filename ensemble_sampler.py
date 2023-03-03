@@ -13,11 +13,11 @@ __version__ = "1.0"
 __email__  = "mwhite@berkeley.edu"
 
 
-# Need to work around some Python path issues on Cori.
+import numpy as np
+import json
 import sys
 import os
-#
-import numpy as np
+
 from hod_likelihood import Likelihood
 from mpi4py         import MPI
 
@@ -168,8 +168,14 @@ if __name__=="__main__":
     ext  = {} ; ext[0] = [] ; ext[1] = []
     fout = "hod_fit.mcmc"
     # and call the sampler:
-    sample(fout,lik,10000)
+    sample(fout,lik,10)
     # Now do something with the samples we've stored
     # if we want to.
-    pass
+    outfn   = "hod_fit_{:03d}.json".format(me)
+    skip    = len(ext[0]) // 2
+    outdict = {}
+    outdict['r'   ] = lik.model.Rcen.copy()
+    outdict['mcmc'] = ext[0][skip:] + ext[1][skip:]
+    with open(outfn,"w") as fout:
+        json.dump(outdict,fout,indent=2)
     #
