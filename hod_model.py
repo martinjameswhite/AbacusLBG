@@ -86,8 +86,6 @@ class HODmodel():
         xi2  = xiell[2*len(Rcen):3*len(Rcen)]
         # Let's save these values in a dictionary.
         self.d = {}
-        self.d['Rcen'] = Rcen.copy()
-        self.d['Zcen'] = Zcen.copy()
         self.d['wpR' ] = wpR.copy()
         self.d['xi0' ] = xi0.copy()
         self.d['xi2' ] = xi2.copy()
