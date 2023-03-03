@@ -22,6 +22,11 @@ class Likelihood():
         self.model = HODmodel("hod_big.yaml")
         hodpar,_   = self.startpar()
         tt = self.model(hodpar)
+        if rank==0:
+            # For debugging.
+            print("Initial theory model:",flush=True)
+            for i in range(tt.shape[0]):
+                print("{:12.4e} {:12.4e}".format(tt[i,0],tt[i,1]))
         # Load data files, covariance, etc.
         self.loadData()
         # Invert the covariance matrix.
