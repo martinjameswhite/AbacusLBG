@@ -15,7 +15,7 @@ from Corrfunc.mocks import DDtheta_mocks as Pairs
 
 
 
-def calc_wx(spec,targ,rand,bins=None,dchi=50):
+def calc_wx(spec,targ,rand,bins=None,dchi=50,fixed_chi0=None):
     """Does the work of calling CorrFunc."""
     # Get number of threads, datas and randoms.
     nthreads = int( os.getenv('OMP_NUM_THREADS','1') )
@@ -23,7 +23,7 @@ def calc_wx(spec,targ,rand,bins=None,dchi=50):
     # Bin edges are specified in Mpc/h, if nothing
     # is passed in, do log-spaced bins.
     if bins is None:
-        Nbin = 10
+        Nbin = 8
         bins = np.logspace(0.0,1.5,Nbin+1)
     # RA and DEC should be in degrees, and all arrays should
     # be the same type.  Ensure this now.
@@ -41,7 +41,14 @@ def calc_wx(spec,targ,rand,bins=None,dchi=50):
     sr   = np.zeros(len(bins)-1) + 1e-15
     chi0 = chimin
     while chi0<chimax:
-        tbins = bins/(chi0+0.5*dchi) * 180./np.pi # deg.
+        if not fixed_chi0 is None:
+            # For observational data want to use the proper
+            # angle->distance conversion.
+            tbins = bins/(chi0+0.5*dchi) * 180./np.pi # deg.
+        else:
+            # But for simpler simulations which have converted
+            # using a fixed distance, make the same approximation.
+            tbins = bins/fixed_chi0 * 180./np.pi # deg.
         ww    = np.nonzero( (sch>=chi0)&(sch<chi0+dchi) )[0]
         if len(ww)>0:
             # do the pair counting.
@@ -52,6 +59,7 @@ def calc_wx(spec,targ,rand,bins=None,dchi=50):
             st += DD['npairs'].astype('float')
             sr += DR['npairs'].astype('float')
         chi0 += dchi
+    if sr.any()<=0: raise RuntimeError("Have sr<=0: "+str(sr))
     wx = float(Nr)/float(Nt) * st/sr - 1.0
     # Return the binning and w_theta(R).
     return( (bins,wx) )
