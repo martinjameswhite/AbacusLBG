@@ -41,7 +41,7 @@ def calc_wx(spec,targ,rand,bins=None,dchi=50,fixed_chi0=None):
     sr   = np.zeros(len(bins)-1) + 1e-15
     chi0 = chimin
     while chi0<chimax:
-        if not fixed_chi0 is None:
+        if fixed_chi0 is None:
             # For observational data want to use the proper
             # angle->distance conversion.
             tbins = bins/(chi0+0.5*dchi) * 180./np.pi # deg.
