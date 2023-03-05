@@ -101,8 +101,6 @@ if __name__=="__main__":
     favg = np.mean(np.array(fchis))
     ferr = np.std(np.array(fchis))
     # Now write out some results.
-    diam *= 180./np.pi
-    area  = np.pi * (diam/2)**2
     with open("mc_lbg_wx.txt","w") as fout:
         fout.write("# Monte-Carlo calculation of wx using {:d} mocks.\n".\
                    format(wxs.shape[0]))
