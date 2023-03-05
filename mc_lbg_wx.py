@@ -87,7 +87,7 @@ if __name__=="__main__":
         spec['CHI'] = dat['CHI'][ww]
         avgfchi = np.mean( sampfn(spec['CHI'])/sampnrm )
         # compute the clustering.
-        bins,wx = calc_wx(spec,dat,ran,fixed_chi0=chi0)
+        bins,wx = calc_wx(spec,dat,ran,dchi=1e5,fixed_chi0=chi0)
         rval    = np.sqrt( bins[:-1]*bins[1:] )
         wxs.append(wx)
         ngals.append(dat['RA'].size)
