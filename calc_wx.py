@@ -24,7 +24,7 @@ def calc_wx(spec,targ,rand,bins=None,dchi=50,fixed_chi0=None):
     # is passed in, do log-spaced bins.
     if bins is None:
         Nbin = 8
-        bins = np.geomspace(0.5,30.,Nbin+1)
+        bins = np.geomspace(1.0,30.,Nbin+1)
     # RA and DEC should be in degrees, and all arrays should
     # be the same type.  Ensure this now.
     sra = spec['RA' ].astype('float32')
