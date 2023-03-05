@@ -51,6 +51,7 @@ class HODmodel():
                 self.newBall.tracers['LRG'][k] = \
                     self.HOD_params['LRG_params'][k]
         want_rsd,write_to_disk = True,False
+        want_rsd,write_to_disk = False,False
         self.mock_dict= self.newBall.run_hod(self.newBall.tracers,\
                                              want_rsd,write_to_disk,\
                                              Nthread=self.nthread)
@@ -89,12 +90,13 @@ class HODmodel():
         self.d['par' ] = p.tolist()
         self.d['wpR' ] = wpR.tolist()
         self.d['xi0' ] = xi0.tolist()
-        self.d['xi2' ] = xi2.tolist()
+        ##self.d['xi2' ] = xi2.tolist()
         self.Rcen      = Rcen.tolist()
         # Pack R,wp into a theory vector and return it.
         tt      = np.zeros( (Rcen.size,2) )
         tt[:,0] = Rcen.copy()
-        tt[:,1] = wpR.copy()
+        ##tt[:,1] = wpR.copy()
+        tt[:,1] = xi0.copy()
         return(tt)
         #
     def __init__(self,yaml_file):
