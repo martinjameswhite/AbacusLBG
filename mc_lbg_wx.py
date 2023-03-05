@@ -25,7 +25,7 @@ if __name__=="__main__":
     fname= "xmmlss"
     sfn  = np.loadtxt("selection_fn.txt")
     mask = SurveyMask('clauds-{:s}-hpmask.fits'.format(fname))
-    tt   = Table.read('clauds-{:s}-rands-dens10000.fits'.format(fname))
+    tt   = Table.read('clauds-{:s}-rands.fits'.format(fname))
     # Set the center of the field.
     cra = np.median(tt['RA'])
     cdc = np.median(tt['DEC'])
@@ -87,7 +87,7 @@ if __name__=="__main__":
         spec['CHI'] = dat['CHI'][ww]
         avgfchi = np.mean( sampfn(spec['CHI'])/sampnrm )
         # compute the clustering.
-        bins,wx = calc_wx(spec,dat,ran)
+        bins,wx = calc_wx(spec,dat,ran,fixed_chi0=chi0)
         rval    = np.sqrt( bins[:-1]*bins[1:] )
         wxs.append(wx)
         ngals.append(dat['RA'].size)
