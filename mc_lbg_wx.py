@@ -81,13 +81,13 @@ if __name__=="__main__":
         # the "spectroscopic targets" -- for now.
         rand = rng.uniform(low=0,high=1,size=dat['RA'].size)
         ww   = np.nonzero( rand<0.10 )[0]
-        targ = {}
-        targ['RA' ] = dat['RA' ][ww]
-        targ['DEC'] = dat['DEC'][ww]
-        targ['CHI'] = dat['CHI'][ww]
-        avgfchi = np.mean( sampfn(targ['CHI'])/sampnrm )
+        spec = {}
+        spec['RA' ] = dat['RA' ][ww]
+        spec['DEC'] = dat['DEC'][ww]
+        spec['CHI'] = dat['CHI'][ww]
+        avgfchi = np.mean( sampfn(spec['CHI'])/sampnrm )
         # compute the clustering.
-        bins,wx = calc_wx(targ,dat,ran)
+        bins,wx = calc_wx(spec,dat,ran)
         rval    = np.sqrt( bins[:-1]*bins[1:] )
         wxs.append(wx)
         ngals.append(dat['RA'].size)
