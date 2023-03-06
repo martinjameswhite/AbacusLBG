@@ -28,7 +28,7 @@ class HODmodel():
         ranges.  Triggers lnL to return a very low log-likelihood."""
         ret = False
         if (p[0]<11.)|(p[0]>14.): ret=True
-        if (p[1]<0.5)|(p[1]>1e2): ret=True
+        if (p[1]<2.0)|(p[1]>25.): ret=True
         if (p[2]<0.0)|(p[2]>3.0): ret=True
         if (p[3]<0.1)|(p[3]>1e2): ret=True
         if (p[4]<0.3)|(p[4]>1.5): ret=True
