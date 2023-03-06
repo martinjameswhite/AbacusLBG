@@ -85,7 +85,7 @@ class Likelihood():
         This assumes constant bias for simplicity.  Returns a spline."""
         xv = self.xim(tt[Nuse:,0])
         B2 = np.mean(tt[Nuse:,1]/xv)
-        rr = np.linspace(1.5*tt[-1,0],self.xmx,100)
+        rr = np.linspace(1.25*tt[-1,0],self.xmx,100)
         xv = np.append(tt[:,0],rr)
         yv = np.append(tt[:,1],B2*self.xim(rr))
         ss = Spline(xv,yv,ext='zeros')
