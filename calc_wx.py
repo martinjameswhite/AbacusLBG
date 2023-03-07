@@ -6,6 +6,11 @@
 # of the targets.
 # Uses the Davis-Peebles estimator.
 #
+#
+# There are "issues" with the Corrfunc routines misbehaving,
+# so currently I am doing a brute-force computation.  This
+# is only intended for use with small catalogs (including randoms).
+#
 import numpy as np
 import os
 #
@@ -15,7 +20,66 @@ from Corrfunc.mocks import DDtheta_mocks as Pairs
 
 
 
+def ang2vec(dat):
+    """Returns an "nhat array" given RA, DEC (deg.) in dat."""
+    tt,pp     = np.radians(90-dat['DEC']),np.radians(dat['RA'])
+    sint      = np.sin(tt)
+    nhat      = np.zeros( (tt.size,3) )
+    nhat[:,0] = sint*np.cos(pp)
+    nhat[:,1] = sint*np.sin(pp)
+    nhat[:,2] = np.cos(tt)
+    return(nhat)
+    #
+
+
+
 def calc_wx(spec,targ,rand,bins=None,dchi=50,fixed_chi0=None):
+    """Does a brute-force pair count."""
+    # Get number of targets and randoms.
+    Nt,Nr = len(targ['RA']),len(rand['RA'])
+    # Get weights, assign uniform weights if 'WT' key is missing.
+    if 'WT' in spec.keys():
+        swt = spec['WT']
+    else:
+        swt = np.ones_like(spec['RA'])
+    if 'WT' in targ.keys():
+        twt = targ['WT']
+    else:
+        twt = np.ones_like(targ['RA'])
+    if 'WT' in rand.keys():
+        rwt = rand['WT']
+    else:
+        rwt = np.ones_like(rand['RA'])
+    # Get unit vectors pointing to each object.
+    nspec,ntarg,nrand = ang2vec(spec),ang2vec(targ),ang2vec(rand)
+    # Bin edges are specified in Mpc/h, if nothing
+    # is passed in, do log-spaced bins.
+    if bins is None:
+        Nbin = 8
+        bins = np.geomspace(0.5,30.,Nbin+1)
+    # Do the brute force pair-distance computation.
+    # First do D_sD_t.
+    wts  = np.outer(swt,twt)
+    cost = np.dot(nspec,ntarg.T).clip(-1.,1.)
+    rval = spec['CHI'][:,None]*np.sqrt(2*(1-cost))
+    DD,_ = np.histogram(rval,weights=wts,bins=bins)
+    # then do D_sR.
+    wts  = np.outer(swt,rwt)
+    cost = np.dot(nspec,nrand.T).clip(-1.,1.)
+    rval = spec['CHI'][:,None]*np.sqrt(2*(1-cost))
+    DR,_ = np.histogram(rval,weights=wts,bins=bins)
+    DR  += 1e-20 # Avoid divide-by-zero.
+    # Now compute the cross-spectrum using Davis-Peebles.
+    wx = float(Nr)/float(Nt) * DD/DR - 1.0
+    # Return the binning and w_theta(R).
+    return( (bins,wx) )
+    #
+
+
+
+
+
+def spam_calc_wx(spec,targ,rand,bins=None,dchi=50,fixed_chi0=None):
     """Does the work of calling CorrFunc."""
     # Get number of threads, datas and randoms.
     nthreads = int( os.getenv('OMP_NUM_THREADS','1') )
@@ -27,12 +91,12 @@ def calc_wx(spec,targ,rand,bins=None,dchi=50,fixed_chi0=None):
         bins = np.geomspace(1.0,30.,Nbin+1)
     # RA and DEC should be in degrees, and all arrays should
     # be the same type.  Ensure this now.
-    sra = spec['RA' ].astype('float32')
-    sdc = spec['DEC'].astype('float32')
-    tra = targ['RA' ].astype('float32')
-    tdc = targ['DEC'].astype('float32')
-    rra = rand['RA' ].astype('float32')
-    rdc = rand['DEC'].astype('float32')
+    sra = np.ascontiguousarray(spec['RA' ]).astype('float32')
+    sdc = np.ascontiguousarray(spec['DEC']).astype('float32')
+    tra = np.ascontiguousarray(targ['RA' ]).astype('float32')
+    tdc = np.ascontiguousarray(targ['DEC']).astype('float32')
+    rra = np.ascontiguousarray(rand['RA' ]).astype('float32')
+    rdc = np.ascontiguousarray(rand['DEC']).astype('float32')
     # We'll need the distances to the spectroscopic sample.
     sch = spec['CHI']
     chimin,chimax = np.min(sch),np.max(sch)
@@ -52,8 +116,12 @@ def calc_wx(spec,targ,rand,bins=None,dchi=50,fixed_chi0=None):
         ww    = np.nonzero( (sch>=chi0)&(sch<chi0+dchi) )[0]
         if len(ww)>0:
             # do the pair counting.
+            #DD = Pairs(0,nthreads,tbins,\
+            #           RA1=sra[ww],DEC1=sdc[ww],RA2=tra,DEC2=tdc)
             DD = Pairs(0,nthreads,tbins,\
-                       RA1=sra[ww],DEC1=sdc[ww],RA2=tra,DEC2=tdc)
+                       RA1=tra,DEC1=tdc,RA2=tra,DEC2=tdc)
+            #DD = Pairs(1,nthreads,tbins,\
+            #           RA1=tra,DEC1=tdc)
             DR = Pairs(0,nthreads,tbins,\
                        RA1=sra[ww],DEC1=sdc[ww],RA2=rra,DEC2=rdc)
             st += DD['npairs'].astype('float')
