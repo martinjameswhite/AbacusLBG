@@ -8,3 +8,8 @@ cp ${db}/clauds-xmmlss-hpmask.fits .
 cp ${db}/clauds-cosmos-rands-dens10000.fits .
 cp ${db}/clauds-xmmlss-rands-dens10000.fits .
 #
+# Copy the ancillary targeting file.
+db1=/global/cfs/cdirs/desi/survey/fiberassign/special/tertiary
+db2=/0015/inputcats/
+fn=lbg-xmmlss-fall2022-hipr24.2-extsub1.0.fits
+cp ${db1}${db2}${fn} claus-xmmlss-cat.fits
