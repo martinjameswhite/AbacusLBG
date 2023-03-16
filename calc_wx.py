@@ -91,12 +91,12 @@ def spam_calc_wx(spec,targ,rand,bins=None,dchi=50,fixed_chi0=None):
         bins = np.geomspace(1.0,30.,Nbin+1)
     # RA and DEC should be in degrees, and all arrays should
     # be the same type.  Ensure this now.
-    sra = np.ascontiguousarray(spec['RA' ]).astype('float32')
-    sdc = np.ascontiguousarray(spec['DEC']).astype('float32')
-    tra = np.ascontiguousarray(targ['RA' ]).astype('float32')
-    tdc = np.ascontiguousarray(targ['DEC']).astype('float32')
-    rra = np.ascontiguousarray(rand['RA' ]).astype('float32')
-    rdc = np.ascontiguousarray(rand['DEC']).astype('float32')
+    sra = np.ascontiguousarray(spec['RA' ]).astype('float')
+    sdc = np.ascontiguousarray(spec['DEC']).astype('float')
+    tra = np.ascontiguousarray(targ['RA' ]).astype('float')
+    tdc = np.ascontiguousarray(targ['DEC']).astype('float')
+    rra = np.ascontiguousarray(rand['RA' ]).astype('float')
+    rdc = np.ascontiguousarray(rand['DEC']).astype('float')
     # We'll need the distances to the spectroscopic sample.
     sch = spec['CHI']
     chimin,chimax = np.min(sch),np.max(sch)
