@@ -6,33 +6,16 @@
 import numpy as np
 import os
 
-from   fake_lbg  import MockLBG
-from   in_mask   import SurveyMask
-from   rotate_to import rotate_to
+from fake_lbg  import MockLBG
+from in_mask   import SurveyMask
+from rotate_to import rotate_to
+from calc_wt   import calc_wt
 
 from astropy.table     import Table
 from scipy.interpolate import InterpolatedUnivariateSpline as Spline
 
-###import Corrfunc
-from   Corrfunc.mocks.DDtheta_mocks import DDtheta_mocks
-from   Corrfunc.utils import convert_3d_counts_to_cf
 
 
-
-
-def calc_wt(dra,ddc,rra,rdc):
-    """Computes the angular correlation function"""
-    threads= int(os.getenv('OMP_NUM_THREADS',1))
-    bins   = np.geomspace(0.005,0.5,16)
-    DD_cnt = DDtheta_mocks(1,threads,bins,dra,ddc)
-    RR_cnt = DDtheta_mocks(1,threads,bins,rra,rdc)
-    DR_cnt = DDtheta_mocks(0,threads,bins,dra,ddc,RA2=rra,DEC2=rdc)
-    tt,wt  = np.sqrt(bins[:-1]*bins[1:]),\
-             convert_3d_counts_to_cf(dra.size,dra.size,\
-                                     rra.size,rra.size,\
-                                     DD_cnt,DR_cnt,DR_cnt,RR_cnt)
-    return((tt,wt))
-    #
 
 
 
@@ -54,6 +37,7 @@ if __name__=="__main__":
     ww,ran     = mask(tt['RA'],tt['DEC']),{}
     ran['RA' ] = tt['RA' ][ww]
     ran['DEC'] = tt['DEC'][ww]
+    ran['WT' ] = np.ones_like(ran['RA'])
     # Define the mock catalog, shell and HOD.
     # 0  12.15  13.55   0.30   1.00   0.75   0.03   6.79e-04
     lbgs   = MockLBG('hod_big.yaml',None,4383.)
@@ -85,21 +69,21 @@ if __name__=="__main__":
         dat['RA' ] = lbgs.xpos*ichi
         dat['DEC'] = lbgs.ypos*ichi
         dat['CHI'] = lbgs.zpos+chi0
+        dat['WT' ] = np.ones_like(dat['RA'])
         # Apply radial selection function.
         rand = rng.uniform(low=0,high=1,size=dat['RA'].size)
         ww   = np.nonzero( rand<sampfn(dat['CHI']) )[0]
         dat['RA' ] = dat['RA' ][ww]
         dat['DEC'] = dat['DEC'][ww]
+        dat['WT' ] = dat['WT' ][ww]
         # Rotate the objects to the field center and apply mask.
         nra,ndc    = rotate_to(dat['RA'],dat['DEC'],cra,cdc)
         ww         = mask(nra,ndc)
         dat['RA' ] = nra[ww]
         dat['DEC'] = ndc[ww]
+        dat['WT' ] = dat['WT'][ww]
         # compute the clustering.
-        bins,wt = calc_wt(dat['RA' ].astype('float'),\
-                          dat['DEC'].astype('float'),\
-                          ran['RA' ].astype('float'),\
-                          ran['DEC'].astype('float'))
+        bins,wt = calc_wt(dat,ran)
         wts.append(wt)
         ngals.append(dat['RA'].size)
     wts  = np.array(wts)
