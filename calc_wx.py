@@ -7,9 +7,10 @@
 # Uses the Davis-Peebles estimator.
 #
 #
-# There are "issues" with the Corrfunc routines misbehaving,
-# so currently I am doing a brute-force computation.  This
-# is only intended for use with small catalogs (including randoms).
+# I was having "issues" with the Corrfunc routines misbehaving
+# when passed float32 rather than float so there is also a
+# routine for a brute-force computation.  This is only intended
+# for use with small catalogs (including randoms).
 #
 import numpy as np
 import os
@@ -33,7 +34,7 @@ def ang2vec(dat):
 
 
 
-def calc_wx(spec,targ,rand,bins=None,dchi=50,fixed_chi0=None):
+def spam_calc_wx(spec,targ,rand,bins=None,dchi=50,fixed_chi0=None):
     """Does a brute-force pair count."""
     # Get number of targets and randoms.
     Nt,Nr = len(targ['RA']),len(rand['RA'])
@@ -79,7 +80,7 @@ def calc_wx(spec,targ,rand,bins=None,dchi=50,fixed_chi0=None):
 
 
 
-def spam_calc_wx(spec,targ,rand,bins=None,dchi=50,fixed_chi0=None):
+def calc_wx(spec,targ,rand,bins=None,dchi=50,fixed_chi0=None):
     """Does the work of calling CorrFunc."""
     # Get number of threads, datas and randoms.
     nthreads = int( os.getenv('OMP_NUM_THREADS','1') )
@@ -88,9 +89,10 @@ def spam_calc_wx(spec,targ,rand,bins=None,dchi=50,fixed_chi0=None):
     # is passed in, do log-spaced bins.
     if bins is None:
         Nbin = 8
-        bins = np.geomspace(1.0,30.,Nbin+1)
+        bins = np.geomspace(0.5,30.,Nbin+1)
     # RA and DEC should be in degrees, and all arrays should
-    # be the same type.  Ensure this now.
+    # be the same type and it seems as if they need to be
+    # 'float' and not e.g. 'float32'.  Ensure this now.
     sra = np.ascontiguousarray(spec['RA' ]).astype('float')
     sdc = np.ascontiguousarray(spec['DEC']).astype('float')
     tra = np.ascontiguousarray(targ['RA' ]).astype('float')
@@ -116,12 +118,8 @@ def spam_calc_wx(spec,targ,rand,bins=None,dchi=50,fixed_chi0=None):
         ww    = np.nonzero( (sch>=chi0)&(sch<chi0+dchi) )[0]
         if len(ww)>0:
             # do the pair counting.
-            #DD = Pairs(0,nthreads,tbins,\
-            #           RA1=sra[ww],DEC1=sdc[ww],RA2=tra,DEC2=tdc)
             DD = Pairs(0,nthreads,tbins,\
-                       RA1=tra,DEC1=tdc,RA2=tra,DEC2=tdc)
-            #DD = Pairs(1,nthreads,tbins,\
-            #           RA1=tra,DEC1=tdc)
+                       RA1=sra[ww],DEC1=sdc[ww],RA2=tra,DEC2=tdc)
             DR = Pairs(0,nthreads,tbins,\
                        RA1=sra[ww],DEC1=sdc[ww],RA2=rra,DEC2=rdc)
             st += DD['npairs'].astype('float')
