@@ -20,20 +20,20 @@ def calc_xi(dat,ran,bins=None):
     # RA and DEC should be in degrees, and all arrays should
     # be the same type.  Ensure this now.
     pp  = 'pair_product'
-    dra = dat['RA' ].astype('float32')
-    ddc = dat['DEC'].astype('float32')
-    dcz = dat['CHI'].astype('float32')
+    dra = dat['RA' ].astype('float')
+    ddc = dat['DEC'].astype('float')
+    dcz = dat['CHI'].astype('float')
     if not 'WT' in dat.keys():
-        dwt = np.ones_like(dat['RA']).astype('float32')
+        dwt = np.ones_like(dat['RA']).astype('float')
     else:
-        dwt = dat['WT'].astype('float32')
-    rra = ran['RA' ].astype('float32')
-    rdc = ran['DEC'].astype('float32')
-    rcz = ran['CHI'].astype('float32')
+        dwt = dat['WT'].astype('float')
+    rra = ran['RA' ].astype('float')
+    rdc = ran['DEC'].astype('float')
+    rcz = ran['CHI'].astype('float')
     if not 'WT' in ran.keys():
-        rwt = np.ones_like(ran['RA']).astype('float32')
+        rwt = np.ones_like(ran['RA']).astype('float')
     else:
-        rwt = ran['WT'].astype('float32')
+        rwt = ran['WT'].astype('float')
     # Bin edges are specified in Mpc/h, if nothing
     # is passed in, do log-spaced bins.
     if bins is None:
