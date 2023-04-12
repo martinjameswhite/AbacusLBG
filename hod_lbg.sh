@@ -8,7 +8,6 @@
 #SBATCH -C cpu
 #SBATCH -A m68
 #
-module unload craype-hugepages2M
 #
 source activate abacus
 #
