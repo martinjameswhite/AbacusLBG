@@ -30,6 +30,7 @@ clustering_params = config['clustering_params']
 meta = get_meta(sim_params['sim_name'],redshift=sim_params['z_mock'])
 #
 # additional parameter choices
+want_zcv      = True
 want_rsd      = HOD_params['want_rsd'] # & False
 write_to_disk = HOD_params['write_to_disk']
 #
@@ -45,7 +46,8 @@ Zcen = np.arange(0.0,float(pimax),dpi) + 0.5*dpi
 # Now loop over HODs writing out HOD, wp(R), xi0, etc. for each.
 #
 if want_rsd:
-    lgMc_list = [12.15,12.50]
+    lgMc_list = [12.15,12.50,11.75]
+    lgMc_list = [12.15,11.75]
     alph_list = [0.75]
     sigm_list = [0.30]
     plat_list = [25.]
@@ -76,7 +78,7 @@ for lgMcut in lgMc_list:
         fsat  = 1-float(ncen)/float(nobj)
         #
         if nobj>maxobj:
-            print("Have nobj=",nobj," downsampling to ",maxobj)
+            print("Have nobj=",nobj," downsampling to ",maxobj,flush=True)
             rng  = np.random.default_rng()
             inds = rng.choice(nobj,size=maxobj,replace=False)
             for k in ['x','y','z','vx','vy','vz','mass','id']:
@@ -87,15 +89,23 @@ for lgMcut in lgMc_list:
         xi0   = xiell[1*len(Rcen):2*len(Rcen)]
         xi2   = xiell[2*len(Rcen):3*len(Rcen)]
         #
-        pk3d  = newBall.compute_Pkmu(mock_dict,nbins_k=50,nbins_mu=11,\
-                  k_hMpc_max=0.5,logk=False,num_cells=1024,\
-                  paste='TSC',compensated=True,interlaced=True)
-        mu    = pk3d['mu_binc']
-        dmu   = 1.0/len(mu)
-        kk    = pk3d['k_binc']
-        pkmu  = pk3d['LRG_LRG']
-        pk0   = (2*0+1)*np.dot(pkmu,1.0*(0*mu**2+1))*dmu
-        pk2   = (2*2+1)*np.dot(pkmu,0.5*(3*mu**2-1))*dmu
+        if want_zcv:
+            # Compute variance reduced spectra.
+            zcv_dict = newBall.apply_zcv(mock_dict,config)
+            kk = zcv_dict['k_binc']
+            pkl= zcv_dict['Pk_tr_tr_ell_zcv'] # variance-reduced multipoles
+            pk0= pkl[0]
+            pk2= pkl[1]
+        else:
+            pk3d  = newBall.compute_Pkmu(mock_dict,nbins_k=50,nbins_mu=11,\
+                      k_hMpc_max=0.5,logk=False,num_cells=1024,\
+                      paste='TSC',compensated=True,interlaced=True)
+            mu    = pk3d['mu_binc']
+            dmu   = 1.0/len(mu)
+            kk    = pk3d['k_binc']
+            pkmu  = pk3d['LRG_LRG']
+            pk0   = (2*0+1)*np.dot(pkmu,1.0*(0*mu**2+1))*dmu
+            pk2   = (2*2+1)*np.dot(pkmu,0.5*(3*mu**2-1))*dmu
         #
         dats.append({'hod':hod,'nobj':nobj,'fsat':fsat,\
                      'wp':wpR.tolist(),'xi0':xi0.tolist(),'xi2':xi2.tolist(),\
