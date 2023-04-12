@@ -24,10 +24,10 @@ zcv_params:
     fields: ["1cb", "delta", "delta2"]
 
 power_params:
-    nbins_k: 576 # nmesh/2
+    nbins_k: 150 # or nmesh/2
     nbins_mu: 1 # since we care only about poles TODO: maybe make skippable
     poles: [0, 2, 4]
-    k_hMpc_max: 3.6191147369354417 # k_Ny
+    k_hMpc_max: 1.5 # 3.6191147369354417 # k_Ny
     paste: 'TSC'
     compensated: True
     interlaced: True
