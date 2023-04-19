@@ -60,16 +60,17 @@ class FullShapeLikelihood(Likelihood):
         diff    = self.dd - fs_obs
         # Compute the templates just by finite difference, knowing the
         # parameter dependence is linear.
-        self.templates = []
+        self.templates,ivar = [],[]
         for par in self.linpar.keys():
             thetas          = self.lp_avg.copy()
             thetas[par]    += 1.0
             self.templates += [ self.fs_observe(self.fs_predict(thetas))-fs_obs ]
+            ivar           += [ 1.0/self.lp_std[par]**2 ]
         self.templates = np.array(self.templates)
         # Now the covariance and offsets from the analytic marginalization.
         TCinv= np.dot(self.templates,self.cinv)
         V    = np.dot(TCinv,diff)
-        L    = np.dot(TCinv,self.templates.T)
+        L    = np.dot(TCinv,self.templates.T)+np.diag(np.array(ivar))
         Linv = np.linalg.inv(L)
         #
         chi2 = np.dot(diff,np.dot(self.cinv,diff))
