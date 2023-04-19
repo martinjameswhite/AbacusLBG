@@ -34,8 +34,8 @@ class FullShapeLikelihood(Likelihood):
         self.loadData()
         # Handle the linear parameters.
         self.linpar = yaml.load(open(self.basedir+self.lp_fname),Loader=yaml.SafeLoader)
-        self.lp_avg = {k: self.linpar[k]['avg'] for k in self.linpar.keys()}
-        self.lp_std = {k: self.linpar[k]['std'] for k in self.linpar.keys()}
+        self.lp_avg = {k: float(self.linpar[k]['avg']) for k in self.linpar.keys()}
+        self.lp_std = {k: float(self.linpar[k]['std']) for k in self.linpar.keys()}
         self.Nlin   = len(self.linpar)
         #
     def get_requirements(self):
