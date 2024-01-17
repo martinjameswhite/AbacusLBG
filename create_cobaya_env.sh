@@ -5,13 +5,13 @@
 # I needed to use PrgEnv-gnu in order to get the Planck lensing
 # likelihood to compile.
 # 
-# Set up an empty environment for Cobaya (cloning the lazy-mpi4py
+# Set up an empty environment for Cobaya (cloning the nersc-mpi4py
 # ensures mpi4py is properly included in its NERSC form).
 #
-conda create --name cobaya --clone lazy-mpi4py
+conda create --name cobaya --clone nersc-mpi4py
 #
 # Switch to the environment.
-source activate cobaya
+conda activate cobaya
 #
 # Install some basic stuff
 conda install numpy scipy sympy matplotlib astropy pandas cython -y
