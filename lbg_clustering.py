@@ -4,6 +4,7 @@ import numpy as np
 import yaml
 import json
 
+import asdf
 from abacusnbody.hod.abacus_hod import AbacusHOD
 from abacusnbody.metadata       import get_meta
 
@@ -11,13 +12,43 @@ from abacusnbody.metadata       import get_meta
 # These are the keys we will copy from the simulation meta-data into
 # the output JSON file.
 simkeys = ['n_s', 'omega_b', 'omega_cdm', 'omega_ncdm', 'N_ncdm', 'N_ur',\
-           'H0', 'w0', 'wa', 'w', 'Omega_DE', 'Omega_K', 'Omega_M', 'Omega_Smooth', \
+           'H0', 'w0', 'wa', 'w',\
+           'Omega_DE', 'Omega_K', 'Omega_M', 'Omega_Smooth', \
            'Redshift', 'ScaleFactor', \
            'OmegaNow_DE', 'OmegaNow_K', 'OmegaNow_m', \
            'f_growth', 'fsmooth', 'Growth', 'Growth_on_a_n', \
            'SimComment', 'SimName', 'SimSet', \
            'BoxSize', 'NP', 'BoxSizeHMpc', 'HubbleTimeHGyr', \
            'ParticleMassHMsun']
+
+
+
+def get_metadata(simdir,simname,redshift,proxy):
+    """This routine gets the metadata for the simulation.  For simulations
+    in the Abacus database this duplicates the get_meta method, but that
+    database is not updated frequently and for some simulations some keys
+    are missing.
+    Proxy is the name of a simulation with the same cosmology that has all
+    of the keys, used as a work-around for missing data."""
+    # First fill in the "missing" information from the proxy simulation.
+    dd = {}
+    pr = get_meta(proxy,redshift)
+    for k in ['n_s','omega_b','omega_cdm','omega_ncdm',\
+              'N_ncdm','N_ur','SimSet']:
+        dd[k] = pr[k]
+    # Now get the remaining information from the ASDF files directly.
+    fn = simdir+simname+\
+         '/halos/z{:.3f}/halo_info/halo_info_000.asdf'.format(float(redshift))
+    with asdf.open(fn) as af:
+        meta = af['header']
+        for k in simkeys:
+            if k in meta: dd[k] = meta[k]
+    return(dd)
+    #
+
+
+
+
 #
 # Load the config file and parse in relevant parameters
 path2config= './hod_big.yaml'
@@ -30,7 +61,7 @@ clustering_params = config['clustering_params']
 meta = get_meta(sim_params['sim_name'],redshift=sim_params['z_mock'])
 #
 # additional parameter choices
-want_zcv      = True
+want_zcv      = False
 want_rsd      = HOD_params['want_rsd'] # & False
 write_to_disk = HOD_params['write_to_disk']
 #
@@ -83,11 +114,13 @@ for lgMcut in lgMc_list:
             inds = rng.choice(nobj,size=maxobj,replace=False)
             for k in ['x','y','z','vx','vy','vz','mass','id']:
                 mock_dict['LRG'][k] = mock_dict['LRG'][k][inds]
-        #wpR   = newBall.compute_wp(mock_dict,rpbins,pimax,dpi)['LRG_LRG']
-        xiell = newBall.compute_multipole(mock_dict,rpbins,pimax,dpi)['LRG_LRG']
+        xiell = newBall.compute_multipole(mock_dict,rpbins,pimax,\
+                          sbins=rpbins,nbins_mu=11,orders=[0,2,4])['LRG_LRG']
         wpR   = xiell[0*len(Rcen):1*len(Rcen)]
         xi0   = xiell[1*len(Rcen):2*len(Rcen)]
         xi2   = xiell[2*len(Rcen):3*len(Rcen)]
+        xi4   = xiell[3*len(Rcen):4*len(Rcen)]
+        bb    = 0.0
         #
         if want_zcv:
             # Compute variance reduced spectra.
@@ -96,19 +129,20 @@ for lgMcut in lgMc_list:
             pkl= zcv_dict['Pk_tr_tr_ell_zcv'] # variance-reduced multipoles
             pk0= pkl[0]
             pk2= pkl[1]
+            bb = zcv_dict['bias'][1] + 1.0 # Convert to Eulerian bias.
         else:
-            pk3d  = newBall.compute_Pkmu(mock_dict,nbins_k=50,nbins_mu=11,\
-                      k_hMpc_max=0.5,logk=False,num_cells=1024,\
-                      paste='TSC',compensated=True,interlaced=True)
-            mu    = pk3d['mu_binc']
-            dmu   = 1.0/len(mu)
-            kk    = pk3d['k_binc']
-            pkmu  = pk3d['LRG_LRG']
-            pk0   = (2*0+1)*np.dot(pkmu,1.0*(0*mu**2+1))*dmu
-            pk2   = (2*2+1)*np.dot(pkmu,0.5*(3*mu**2-1))*dmu
+            pk3d = newBall.compute_power(mock_dict,nbins_k=50,nbins_mu=11,\
+                     k_hMpc_max=0.5,logk=False,poles=[0,2],num_cells=512,\
+                     paste='TSC',compensated=True,interlaced=True)
+            kk   = pk3d['k_binc']
+            pkl  = pk3d['LRG_LRG_ell']
+            pk0  = pkl[:,0]
+            pk2  = pkl[:,1]
+            bb   = 0.0 # Placeholder.
         #
-        dats.append({'hod':hod,'nobj':nobj,'fsat':fsat,\
-                     'wp':wpR.tolist(),'xi0':xi0.tolist(),'xi2':xi2.tolist(),\
+        dats.append({'hod':hod,'nobj':nobj,'fsat':fsat,'bias':bb,\
+                     'wp':wpR.tolist(),\
+                     'xi0':xi0.tolist(),'xi2':xi2.tolist(),'xi4':xi4.tolist(),\
                      'pk0':pk0.tolist(),'pk2':pk2.tolist()})
 # Now write out our answers.
 outdict = {}
