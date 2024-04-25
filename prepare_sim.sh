@@ -8,9 +8,8 @@
 #SBATCH -C cpu
 #SBATCH -A m68
 #
-module unload craype-hugepages2M
-#
-source activate abacus
+module load python
+conda activate abacus
 #
 # This code uses abacusnbody.hod.prepare_sim, but this itself has
 # subsampling hard-coded that is not appropriate for LBGs or LAEs.
@@ -21,8 +20,8 @@ source activate abacus
 #python -m abacusnbody.hod.prepare_sim \
 #  --path2config ./hod_big.yaml --alt_simname AbacusSummit_base_c000_ph000
 #
-python -m abacusnbody.hod.prepare_sim \
-  --path2config ./prepare_sim.yaml --alt_simname AbacusSummit_base_c000_ph015
+#python -m abacusnbody.hod.prepare_sim \
+#  --path2config ./prepare_sim.yaml --alt_simname AbacusSummit_base_c000_ph015
 #
 #python -m abacusnbody.hod.prepare_sim \
 #  --path2config ./hod_tmp.yaml --alt_simname AbacusSummit_high_c000_ph100
