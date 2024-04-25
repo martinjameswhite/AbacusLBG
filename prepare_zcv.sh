@@ -8,7 +8,8 @@
 #SBATCH -C cpu
 #SBATCH -A m68
 #
-source activate abacus
+module load python
+conda activate abacus
 #
 # This code uses abacusnbody.hod.zcv
 # Run once per simulation.
@@ -18,5 +19,5 @@ source activate abacus
 # Run once per simulation and redshift bin.
 #python -m abacusnbody.hod.zcv.advect_fields --path2config ./prepare_zcv.yaml --want_rsd
 # Run once per simulation and redshift bin (needed even if want_rsd is true).
-python -m abacusnbody.hod.zcv.advect_fields --path2config ./prepare_zcv.yaml
+#python -m abacusnbody.hod.zcv.advect_fields --path2config ./prepare_zcv.yaml
 #
