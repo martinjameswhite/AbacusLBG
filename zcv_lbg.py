@@ -66,7 +66,7 @@ if __name__=="__main__":
     with open("zcv_lbg_m{:03d}".format(ihod)+\
               outsim+"lgMh_hist.txt","w") as fout:
         fout.write("# Histogram of host halo masses.\n")
-        fout.write("# "+outsim[:-1]+"\n")
+        fout.write("# Simulation "+outsim[1:-1]+"\n")
         fout.write("# {:>8s} {:>15s}\n".format("lgMh","Number"))
         for i in range(y.size):
             fout.write("{:10.3f} {:15.5e}\n".format(x[i],y[i]))
