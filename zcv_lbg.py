@@ -25,6 +25,7 @@ if __name__=="__main__":
     hodkeys= ['logM_cut','logM1','sigma','kappa','alpha']
     hod    = {'logM_cut':12.50,'logM1':12.50+np.log10(25.),\
               'sigma':0.30,'kappa':1.00,'alpha':0.75}
+    ihod   = 1
     print("HOD: ",hod,flush=True)
     #
     # Load the config file and parse in relevant parameters
@@ -45,7 +46,11 @@ if __name__=="__main__":
     # Copy the HOD parameters.
     for k in hodkeys:
         HOD_params['LRG_params'][k] = hod[k]
-    #
+    # Set some useful filename pieces.
+    outsim = sim_params['sim_name']
+    outsim = outsim[outsim.find("_c0"):] + '_'
+    outsuf = 's' if want_rsd else 'r'
+    # Now generate the mock.
     newBall  = AbacusHOD(sim_params,HOD_params,clustering_params)
     mock_dict= newBall.run_hod(newBall.tracers,want_rsd,\
                                write_to_disk,Nthread=16)
@@ -58,8 +63,10 @@ if __name__=="__main__":
     y,x = np.histogram(np.log10(mock_dict['LRG']['mass']+1e-10),\
                        bins=np.arange(9.5,15.01,0.05))
     x = 0.5*(x[:-1]+x[1:])
-    with open("zcv_lbg_lgMh_hist.txt","w") as fout:
+    with open("zcv_lbg_m{:03d}".format(ihod)+\
+              outsim+"lgMh_hist.json","w") as fout:
         fout.write("# Histogram of host halo masses.\n")
+        fout.write("# "+outsim[:-1]+"\n")
         fout.write("# {:>8s} {:>15s}\n".format("lgMh","Number"))
         for i in range(y.size):
             fout.write("{:10.3f} {:15.5e}\n".format(x[i],y[i]))
@@ -113,8 +120,5 @@ outdict['k'      ] = kk.tolist()
 outdict['hodkeys'] = hodkeys
 outdict['hod'    ] = hod
 for k in dats.keys(): outdict[k]=dats[k]
-outsuf = 's' if want_rsd else 'r'
-outsim = sim_params['sim_name']
-outsim = outsim[outsim.find("_c0"):] + '_'
-with open("lbg_m001"+outsim+outsuf+"_zcv.json","w") as fout:
+with open("lbg_m{:03d}".format(ihod)+outsim+outsuf+"_zcv.json","w") as fout:
     json.dump(outdict,fout,indent=2)
