@@ -75,6 +75,9 @@ if __name__=="__main__":
         bb  = zcv_dict['bias'][0] + 1.0 # Convert to Eulerian bias.
         print("Pk: ",pk0,flush=True)
         print("bE: ",bb,flush=True)
+    else:
+        kk,bb      = np.array([0]),0
+        pk0,pk2,pk4= np.array([0]),np.array([0]),np.array([0])
     #
     if False: # Old code.
         maxobj  = 8000000 # Should be an integer.
@@ -83,7 +86,7 @@ if __name__=="__main__":
         inds = rng.choice(nobj,size=maxobj,replace=False)
         for k in ['x','y','z','vx','vy','vz','mass','id']:
             mock_dict['LRG'][k] = mock_dict['LRG'][k][inds]
-    if want_zcv&False:
+    if want_zcv:
         zcv_dict = newBall.apply_zcv_xi(mock_dict,\
                                         config,load_presaved=False)
         xiell    = zcv_dict['Xi_tr_tr_ell_zcv']
