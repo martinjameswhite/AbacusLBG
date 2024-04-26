@@ -23,7 +23,7 @@ if __name__=="__main__":
     # with the sqrt{2}.
     # Satellite numbers are ncen times ([M-kappa.Mcut]/M1)^alpha
     hodkeys= ['logM_cut','logM1','sigma','kappa','alpha']
-    hod    = {'logM_cut':12.15,'logM1':12.15+np.log10(25.),\
+    hod    = {'logM_cut':12.50,'logM1':12.50+np.log10(25.),\
               'sigma':0.30,'kappa':1.00,'alpha':0.75}
     print("HOD: ",hod,flush=True)
     #
@@ -83,7 +83,7 @@ if __name__=="__main__":
         inds = rng.choice(nobj,size=maxobj,replace=False)
         for k in ['x','y','z','vx','vy','vz','mass','id']:
             mock_dict['LRG'][k] = mock_dict['LRG'][k][inds]
-    if want_zcv:
+    if want_zcv&False:
         zcv_dict = newBall.apply_zcv_xi(mock_dict,\
                                         config,load_presaved=False)
         xiell    = zcv_dict['Xi_tr_tr_ell_zcv']
@@ -95,6 +95,9 @@ if __name__=="__main__":
         bb       = zcv_dict['bias'][0] + 1.0 # Convert to Eulerian bias.
         print("xi: ",xi0,flush=True)
         print("bE: ",bb,flush=True)
+    else:
+        rbinc,wpR  = np.array([0]),np.array([0])
+        xi0,xi2,xi4= np.array([0]),np.array([0]),np.array([0])
     #
     dats={'nobj':nobj,'fsat':fsat,'bias':bb,'wp':wpR.tolist(),\
           'xi0':xi0.tolist(),'xi2':xi2.tolist(),'xi4':xi4.tolist(),\
@@ -110,5 +113,5 @@ for k in dats.keys(): outdict[k]=dats[k]
 outsuf = 's' if want_rsd else 'r'
 outsim = sim_params['sim_name']
 outsim = outsim[outsim.find("_c0"):] + '_'
-with open("lbg_c000_ph000"+outsim+outsuf+"_zcv.json","w") as fout:
+with open("lbg_m001"+outsim+outsuf+"_zcv.json","w") as fout:
     json.dump(outdict,fout,indent=2)
