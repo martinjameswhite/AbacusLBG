@@ -64,7 +64,7 @@ if __name__=="__main__":
                        bins=np.arange(9.5,15.01,0.05))
     x = 0.5*(x[:-1]+x[1:])
     with open("zcv_lbg_m{:03d}".format(ihod)+\
-              outsim+"lgMh_hist.json","w") as fout:
+              outsim+"lgMh_hist.txt","w") as fout:
         fout.write("# Histogram of host halo masses.\n")
         fout.write("# "+outsim[:-1]+"\n")
         fout.write("# {:>8s} {:>15s}\n".format("lgMh","Number"))
